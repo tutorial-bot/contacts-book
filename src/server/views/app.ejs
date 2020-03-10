@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="<%= meta.lang %>">
+<html lang="<%= state.meta.lang %>">
 <head>
     <meta charset="utf-8">
-    <title><%= meta.title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= state.meta.title %></title>
 </head>
 <body>
-    <h1><%= meta.title %></h1>
-    <script type="module" src="client.js"></script>
+  <contacts-app state="<%= JSON.stringify(state) %>"></contacts-app>
 </body>
 </html>
