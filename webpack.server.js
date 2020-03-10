@@ -1,8 +1,9 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const NodemonPlugin = require('nodemon-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
+  mode: process.env.NODE_ENV || 'production',
   entry: './src/server/index.js',
   output: {
     filename: 'server.js',
@@ -33,4 +34,7 @@ module.exports = {
       }
     ],
   },
+  plugins: [
+    new NodemonPlugin(),
+  ]
 };
