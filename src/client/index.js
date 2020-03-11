@@ -1,1 +1,1 @@
-console.log('app is working');
+import './components/contacts-app/index.js';

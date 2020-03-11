@@ -21,12 +21,17 @@
   },
   "homepage": "https://github.com/noomorph/contacts-book#readme",
   "dependencies": {
+    "core-js": "^3.6.4",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.8.7",
+    "babel-loader": "^8.0.6",
     "file-loader": "^5.1.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
