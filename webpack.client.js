@@ -22,9 +22,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: '../views/app.ejs',
       template: 'raw-loader!./src/server/views/app.ejs',
-      meta: {
-        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
-      },
     }),
     new InvalidPathFixPlugin({
       invalidPath: '../public/',
