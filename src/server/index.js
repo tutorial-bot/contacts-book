@@ -1,7 +1,7 @@
 import * as path from 'path';
 import express from 'express';
-import {Store} from "../common/Store";
-import {Navigation} from "../common/Navigation";
+import Store from '../common/Store';
+import Navigation from '../common/Navigation';
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const store = new Store();
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.render('app', {
     state: store.toJSON(),
     meta: Navigation.viewContacts(),
@@ -20,6 +20,7 @@ app.get('/', function (req, res) {
 
 const port = Number(process.env.PORT || 8080);
 
-app.listen(port, function () {
-    console.log('Listening on port: ' + port);
+app.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Listening on port: ${port}`);
 });

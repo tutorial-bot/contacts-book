@@ -4,6 +4,7 @@ const NodemonPlugin = require('nodemon-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'production',
+  devtool: 'source-map',
   entry: ['core-js/stable', './src/server/index.js'],
   output: {
     filename: 'server.js',
@@ -18,7 +19,10 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        use: [
+          'babel-loader',
+          'eslint-loader',
+        ],
       },
       {
         test: /\.ejs$/,

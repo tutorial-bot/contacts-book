@@ -1,1 +1,1 @@
-import './components/contacts-app/index.js';
+import './components/contacts-app';
