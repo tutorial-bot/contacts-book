@@ -4,7 +4,7 @@ const NodemonPlugin = require('nodemon-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'production',
-  entry: './src/server/index.js',
+  entry: ['core-js/stable', './src/server/index.js'],
   output: {
     filename: 'server.js',
     path: path.resolve(__dirname, 'dist'),
