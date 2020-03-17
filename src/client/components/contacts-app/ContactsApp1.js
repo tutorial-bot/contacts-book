@@ -1,17 +1,6 @@
+import appTemplate from './ContactsApp.html';
 import reducer from '../../model/contacts.js';
 import {ServerApi} from "../../services/ServerApi.js";
-
-const appStyle = `
-`;
-
-const appTemplate = `
-  <style>{appStyle}</style>
-  <h1>Contacts</h1>
-  <button id="create">New contact</button>
-  <contact-list id="list"></contact-list>
-  <dialog id="dialog"></dialog>
-  <ul id="errors"></ul>
-`;
 
 class ContactApp extends HTMLElement {
   _isInPopState = false;
@@ -108,31 +97,6 @@ class ContactApp extends HTMLElement {
     document.title = meta.title;
   }
 
-  _populateList(data) {
-    const children = this._list.children;
-    const htmlCount = children.length;
-    const dataCount = data.items.length;
-    const minCount = Math.min(dataCount, htmlCount);
-    const maxCount = Math.max(dataCount, htmlCount);
-
-    for (let i = 0; i < maxCount; i++) {
-      const shouldUpdate = i < minCount;
-      const shouldAdd = !shouldUpdate && (i >= htmlCount);
-      const shouldDelete = !shouldUpdate && (i >= dataCount);
-
-      if (shouldDelete) {
-        children[i].remove();
-      } else {
-        if (shouldAdd) {
-          const item = this._renderListItem(data.items[i], i === data.selectedIndex);
-          this._list.appendChild(item);
-        } else {
-          children[i].value = data.items[i];
-        }
-      }
-    }
-  }
-
   _renderForm(data) {
     const hasData = Boolean(data);
     const isOpen = this._dialog.open;
@@ -151,19 +115,6 @@ class ContactApp extends HTMLElement {
       this._dialog.close();
     }
   }
-
-  _renderListItem(data, isSelected) {
-    const item = this._renderContact(data);
-    item.selected = isSelected;
-    return item;
-  }
-
-  _renderContact(value) {
-    return Object.assign(
-        document.createElement('contact-item'),
-        { value }
-    );
-  };
 
   _populateErrors(errors) {
     this._errors.innerHTML = '';
