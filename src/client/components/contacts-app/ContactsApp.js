@@ -1,5 +1,5 @@
 import template from './ContactsApp.html';
-import Store from '../../../common/Store';
+import Store from '../../../common/model/Store';
 import ClientRouter from '../../services/ClientRouter';
 
 export default class ContactsApp extends HTMLElement {

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import express from 'express';
-import Store from '../common/Store';
+import Store from '../common/model/Store';
 import Navigation from '../common/Navigation';
 
 const app = express();

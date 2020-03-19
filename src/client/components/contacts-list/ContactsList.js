@@ -27,17 +27,17 @@ export default class ContactsList extends HTMLElement {
       const itemValue = value[index];
 
       if (shouldAdd) {
-        this.#appendListItem(value, index)
+        this.#appendListItem(itemValue, index)
         continue;
       }
 
       if (shouldUpdate) {
-        this.#updateListItem(value, index);
+        this.#updateListItem(itemValue, index);
         continue;
       }
 
       if (shouldDelete) {
-        this.#removeListItem(value, index);
+        this.#removeListItem(itemValue, index);
         continue;
       }
     }
@@ -53,8 +53,8 @@ export default class ContactsList extends HTMLElement {
     li.append(contactsItem);
 
     this.#list.appendChild(li);
-  } 
-  
+  }
+
   #updateListItem(value, index) {
     const li = this.#list.children[index];
     const [contactsItem] = li.getElementsByTagName('contacts-item');
