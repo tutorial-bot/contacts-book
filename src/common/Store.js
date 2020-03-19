@@ -22,6 +22,10 @@ export default class Store {
       };
     }
 
+    clone() {
+      return new Store(this.toJSON());
+    }
+
     addContact({ id, ...data }) {
       if (!id) {
         throw new Error('Failed to create a contact due to the missing ID');

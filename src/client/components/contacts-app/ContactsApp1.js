@@ -1,6 +1,7 @@
 import appTemplate from './ContactsApp.html';
 import reducer from '../../model/contacts.js';
 import {ServerApi} from "../../services/ServerApi.js";
+import ClientRouter from "../../services/ClientRouter";
 
 class ContactApp extends HTMLElement {
   _isInPopState = false;
@@ -23,51 +24,7 @@ class ContactApp extends HTMLElement {
     this._createContact = this.shadowRoot.getElementById('create');
     this._createContact.addEventListener('click', this._onCreateContact);
     this._dialog.addEventListener('cancel', this._onCancelDialog);
-  }
-
-  connectedCallback() {
-    window.addEventListener('popstate', this._onPopState);
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener('popstate', this._onPopState);
-  }
-
-  _onPopState = (e) => {
-    this._isInPopState = true;
-
-    try {
-      this.state = {
-        ...this.state,
-        ...this._initialState,
-        ...e.state,
-      };
-    } finally {
-      this._isInPopState = false;
-    }
-  };
-
-  attributeChangedCallback(key, oldValue, newValue) {
-    if (!this.state && key === 'initial-state') {
-      this.state = newValue;
-      this._initialState = this.state;
-    }
-  }
-
-  get state() {
-    return this._state;
-  }
-
-  set state(value) {
-    const oldState = this._state;
-
-    if (typeof value === 'string') {
-      this._state = JSON.parse(value);
-    } else {
-      this._state = value;
-    }
-
-    this._render(oldState);
+    this._router = new ClientRouter(this);
   }
 
   _render(oldState = {}) {

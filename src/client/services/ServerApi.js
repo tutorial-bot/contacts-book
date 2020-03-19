@@ -1,36 +1,28 @@
-export class ServerApi {
-    async saveContact(contact) {
-        return contact.id
-            ? this._saveExistingContact(contact)
-            : this._saveNewContact(contact);
+export default class ServerApi {
+  async putContact(contact) {
+    return this.#fetchContact('PUT', contact.id, contact);
+  }
+
+  async patchContact(contact) {
+    return this.#fetchContact('PATCH', contact.id, contact);
+  }
+
+  async deleteContact(contact) {
+    return this.#fetchContact('DELETE', contact.id);
+  }
+
+  async #fetchContact(method, contactId, body) {
+    const url = `/contacts/${contactId}`;
+    const data = {
+      method,
+      headers: {}
+    };
+
+    if (body) {
+      data.headers['Content-Type'] = 'application/json';
+      data.body = JSON.stringify(contact);
     }
 
-    async deleteContact(contact) {
-        return fetch(`/contacts/${contact.id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then(r => r.json());
-    }
-
-    async _saveExistingContact(contact) {
-        return fetch(`/contacts/${contact.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(contact),
-        }).then(r => r.json());
-    }
-
-    async _saveNewContact(contact) {
-        return fetch('/contacts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(contact),
-        }).then(r => r.json());
-    }
+    return fetch(url, data).then(r => r.json());
+  }
 }
