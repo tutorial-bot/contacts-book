@@ -1,3 +1,5 @@
+import {capitalize} from 'lodash';
+
 export default class ClientStore extends EventTarget {
   /**
    * @type {Store}
@@ -23,39 +25,45 @@ export default class ClientStore extends EventTarget {
   }
 
   async addContact(contact) {
-    await this.#withinTransaction(async () => {
-      this.#optimistic.addContact(contact);
-      await this.#api.putContact(contact);
-    });
+    const dispatch = this.#prepareEventDispatches('addContact');
 
-    this.#dispatchEvent({
-      type: 'contacts.addContact',
-      detail: contact,
-    });
+    if (dispatch.before(contact)) {
+      await this.#withinTransaction(async () => {
+        this.#optimistic.addContact(contact);
+        dispatch.optimistic(contact);
+        await this.#api.putContact(contact);
+      });
+
+      dispatch.confirmed(contact);
+    }
   }
 
   async updateContact(contact) {
-    await this.#withinTransaction(async () => {
-      this.#optimistic.updateContact(contact);
-      await this.#api.patchContact(contact);
-    });
+    const dispatch = this.#prepareEventDispatches('updateContact');
 
-    this.#dispatchEvent({
-      type: 'contacts.updateContact',
-      detail: contact,
-    });
+    if (dispatch.before(contact)) {
+      await this.#withinTransaction(async () => {
+        this.#optimistic.updateContact(contact);
+        dispatch.optimistic(contact);
+        await this.#api.patchContact(contact);
+      });
+
+      dispatch.confirmed(contact);
+    }
   }
 
   async removeContact(contact) {
-    await this.#withinTransaction(async () => {
-      this.#optimistic.removeContact(contact);
-      await this.#api.deleteContact(contact);
-    });
+    const dispatch = this.#prepareEventDispatches('removeContact');
 
-    this.#dispatchEvent({
-      type: 'contacts.removeContact',
-      detail: contact,
-    });
+    if (dispatch.before(contact)) {
+      await this.#withinTransaction(async () => {
+        this.#optimistic.removeContact(contact);
+        dispatch.optimistic(contact);
+        await this.#api.deleteContact(contact);
+      });
+
+      dispatch.confirmed(contact);
+    }
   }
 
   #isInTransaction = false;
@@ -71,22 +79,51 @@ export default class ClientStore extends EventTarget {
       await callback();
       this.#confirmed = this.#optimistic;
     } catch (e) {
-      this.#optimistic = this.#confirmed;
-      this.#dispatchEvent({
-        type: 'contacts-error',
+      this.#revert();
+      this.#dispatchStoreEvent({
+        type: 'error',
         detail: e,
       });
+
       throw e;
     } finally {
       this.#isInTransaction = false;
     }
   }
 
-  #dispatchEvent({ type, detail }) {
-    this.dispatchEvent(new CustomEvent(type, {
+  #revert() {
+    this.#optimistic = this.#confirmed;
+    this.#dispatchStoreEvent({
+      type: 'reset',
+    });
+  }
+
+  #prepareEventDispatches(type) {
+    return {
+      before: (detail) => {
+        return this.#dispatchStoreEvent({
+          type: `before${capitalize(type)}`,
+          cancelable: true,
+          detail,
+        });
+      },
+      optimistic: (detail) => {
+        return this.#dispatchStoreEvent({ type, detail });
+      },
+      confirmed: (detail) => {
+        return this.#dispatchStoreEvent({
+          type: `${type}Done`,
+          detail,
+        });
+      },
+    };
+  }
+
+  #dispatchStoreEvent({ type, cancelable = false, detail }) {
+    return this.dispatchEvent(new CustomEvent(`store:${type}`, {
       bubbles: true,
-      cancelable: false,
       composed: true,
+      cancelable,
       detail,
     }));
   }
