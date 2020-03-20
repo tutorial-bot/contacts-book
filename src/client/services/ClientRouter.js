@@ -1,8 +1,9 @@
 export default class ClientRouter {
-  #todoApp = null;
+  /** @type {AppState} */
+  #appState = null;
 
-  constructor(todoApp) {
-    this.#todoApp = todoApp;
+  constructor(appState) {
+    this.#appState = appState;
   }
 
   listen() {
@@ -14,6 +15,29 @@ export default class ClientRouter {
   }
 
   #onpopstate = (e) => {
-    this.#todoApp.meta = e.state;
+    this.handleRoute(location.pathname);
+  };
+
+  handleRoute(path) {
+    const equals = str => path === str || path === `${str}/`;
+
+    if (!path || equals('')) {
+      return this.#appState.gotoContactsList();
+    }
+
+    if (equals('/contacts')) {
+      return this.#appState.gotoContactsList();
+    }
+
+    if (equals('/contacts/new')) {
+      return this.#appState.openNewContactForm();
+    }
+
+    if (path.startsWith('/contacts/')) {
+      const id = path.split('/')[2];
+      return this.#appState.openEditContactForm(id);
+    }
+
+    this.#appState.pushError(new Error(`Cannot resolve path: ${path}`));
   }
 }

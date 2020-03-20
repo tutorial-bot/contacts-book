@@ -3,11 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= meta.title %></title>
+    <title><%= location.title %></title>
 </head>
 <body>
-  <contacts-app
-          initial-state="<%= JSON.stringify(state) %>"
-          meta="<%= JSON.stringify(meta) %>"></contacts-app>
+  <contacts-app initial-state="<%= JSON.stringify(state) %>">">
+  </contacts-app>
 </body>
 </html>

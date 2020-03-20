@@ -1,15 +1,11 @@
+import {mapValues} from 'lodash';
 import template from './ContactsApp.html';
-import Store from '../../../common/model/Store';
-import ClientRouter from '../../services/ClientRouter';
+import AppState from "../../model/AppState";
+import ClientStore from "../../services/ClientStore";
+import ClientRouter from "../../services/ClientRouter";
 
 export default class ContactsApp extends HTMLElement {
-  constructor() {
-    super();
-
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = template;
-  }
-
+  /** @type {ClientStore} */
   #store = null;
 
   get store() {
@@ -20,35 +16,56 @@ export default class ContactsApp extends HTMLElement {
     return this.#store;
   }
 
-  set store(value) {
-    if (value) {
-      this.#store = value;
+  /** @type {AppState} */
+  #appState = null;
+
+  get appState() {
+    if (!this.#appState) {
+      throw new Error('App state is not initialized');
     }
+
+    return this.#appState;
   }
 
-  #router = new ClientRouter(this);
+  /** @type {ClientRouter} */
+  #router = null;
 
-  get location() {
-    return this.#router.location;
-  }
+  #elements = {
+    create: null,
+    list: null,
+    dialog: null,
+    errors: null,
+  };
 
-  set location(value) {
-    if (value && typeof value === 'string') {
-      this.#router.location = JSON.parse(value);
-    } else {
-      this.#router.location = value;
-    }
+  constructor() {
+    super();
+
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = template;
+    this.#elements = mapValues((_, key) => this.shadowRoot.getElementById(key));
   }
 
   attributeChangedCallback(key, oldValue, newValue) {
     if (!this.#store && key === 'initial-state') {
-      this.#store = new Store(newValue);
-    }
+      this.#store = new ClientStore(newValue);
+      this.#appState = new AppState(this.#store);
+      this.#router = new ClientRouter(this.#appState);
 
-    if (key === 'meta') {
-      this.location = newValue;
+      this.#elements.list.value = this.#store.getContacts();
+      this.#addListeners();
     }
   }
 
-  static observedAttributes = ['initial-state', 'meta'];
+  #addListeners() {
+  }
+
+  connectedCallback() {
+    this.#router.listen();
+  }
+
+  disconnectedCallback() {
+    this.#router.unlisten();
+  }
+
+  static observedAttributes = ['initial-state'];
 }

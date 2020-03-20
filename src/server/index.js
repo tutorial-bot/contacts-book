@@ -1,7 +1,7 @@
 import * as path from 'path';
 import express from 'express';
 import Store from '../common/model/Store';
-import Navigation from '../common/Navigation';
+import LocationBuilder from "../common/model/LocationBuilder";
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -12,9 +12,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const store = new Store();
 
 app.get('/', (req, res) => {
+  res.redirect('/contacts');
+});
+
+app.get('/contacts', (req, res) => {
   res.render('app', {
     state: store.toJSON(),
-    meta: Navigation.viewContacts(),
+    location: LocationBuilder.viewContacts(),
   });
 });
 

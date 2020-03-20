@@ -24,12 +24,27 @@ export default class ClientStore extends EventTarget {
     this.#api = api;
   }
 
+  pendingIds = new Set();
+
+  hasContact(contactId) {
+    return this.#optimistic.hasContact(contactId);
+  }
+
+  getContact(contactId) {
+    return this.#optimistic.getContact(contactId);
+  }
+
+  getContacts() {
+    return this.#optimistic.getContacts();
+  }
+
   async addContact(contact) {
     const dispatch = this.#prepareEventDispatches('addContact');
 
     if (dispatch.before(contact)) {
       await this.#withinTransaction(async () => {
         this.#optimistic.addContact(contact);
+        this.pendingIds.add(contact.id);
         dispatch.optimistic(contact);
         await this.#api.putContact(contact);
       });
@@ -44,6 +59,7 @@ export default class ClientStore extends EventTarget {
     if (dispatch.before(contact)) {
       await this.#withinTransaction(async () => {
         this.#optimistic.updateContact(contact);
+        this.pendingIds.add(contact.id);
         dispatch.optimistic(contact);
         await this.#api.patchContact(contact);
       });
@@ -57,9 +73,11 @@ export default class ClientStore extends EventTarget {
 
     if (dispatch.before(contact)) {
       await this.#withinTransaction(async () => {
-        this.#optimistic.removeContact(contact);
+        this.#optimistic.updateContact({ ...contact, deleted: true });
+        this.pendingIds.add(contact.id);
         dispatch.optimistic(contact);
         await this.#api.deleteContact(contact);
+        this.#optimistic.removeContact(contact);
       });
 
       dispatch.confirmed(contact);
@@ -88,14 +106,15 @@ export default class ClientStore extends EventTarget {
       throw e;
     } finally {
       this.#isInTransaction = false;
+      this.pendingIds.clear();
     }
   }
 
   #revert() {
     this.#optimistic = this.#confirmed;
-    this.#dispatchStoreEvent({
-      type: 'reset',
-    });
+
+    this.#dispatchStoreEvent({ type: 'change' });
+    this.#dispatchStoreEvent({ type: 'changeDone' });
   }
 
   #prepareEventDispatches(type) {
@@ -108,13 +127,16 @@ export default class ClientStore extends EventTarget {
         });
       },
       optimistic: (detail) => {
-        return this.#dispatchStoreEvent({ type, detail });
+        this.#dispatchStoreEvent({ type, detail });
+        this.#dispatchStoreEvent({ type: `change` });
       },
       confirmed: (detail) => {
-        return this.#dispatchStoreEvent({
+        this.#dispatchStoreEvent({
           type: `${type}Done`,
           detail,
         });
+
+        this.#dispatchStoreEvent({ type: `changeDone` });
       },
     };
   }

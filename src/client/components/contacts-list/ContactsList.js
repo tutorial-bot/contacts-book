@@ -1,12 +1,15 @@
 export default class ContactsList extends HTMLElement {
   #items = [];
-  #list = document.createElement('ol');
+  #list = null;
+  #noItems = null;
 
   constructor() {
     super();
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.append(this.#list);
+    this.#list = this.shadowRoot.getElementById('list');
+    this.#noItems = this.shadowRoot.getElementById('noItems');
   }
 
   get items() {
@@ -43,6 +46,7 @@ export default class ContactsList extends HTMLElement {
     }
 
     this.#items = value;
+    this.#noItems.hidden = this.#items.length > 0;
   }
 
   #appendListItem(value) {
