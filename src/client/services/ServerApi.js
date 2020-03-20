@@ -3,10 +3,6 @@ export default class ServerApi {
     return this.#fetchContact('PUT', contact.id, contact);
   }
 
-  async patchContact(contact) {
-    return this.#fetchContact('PATCH', contact.id, contact);
-  }
-
   async deleteContact(contact) {
     return this.#fetchContact('DELETE', contact.id);
   }

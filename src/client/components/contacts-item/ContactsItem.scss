@@ -1,3 +1,11 @@
+:host([disabled]) {
+  color: gray;
+}
+
+:host([deleted]) {
+  text-decoration: line-through;
+}
+
 #link {
   color: inherit;
 }

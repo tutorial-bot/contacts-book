@@ -46,7 +46,7 @@ export default class Store {
     return this.#contacts.get(id);
   }
 
-  addContact({ id, ...data }) {
+  saveContact({ id, ...data }) {
     if (!id) {
       throw new Error('Failed to create a contact due to the missing ID');
     }
@@ -59,13 +59,13 @@ export default class Store {
     this.#lastUpdated = new Date();
   }
 
-  updateContact({ id, ...data }) {
+  patchContact({ id, ...data }) {
     const contact = this.#contacts.get(id);
     if (contact) {
       this.#contacts.set(id, { ...contact, ...data });
       this.#lastUpdated = new Date();
     } else {
-      throw new Error(`Failed to update a contact due to the non-existent ID: ${id}`);
+      throw new Error(`Failed to patch a contact due to the non-existent ID: ${id}`);
     }
   }
 

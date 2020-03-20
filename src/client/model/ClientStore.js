@@ -1,4 +1,4 @@
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 
 export default class ClientStore extends EventTarget {
   /**
@@ -38,30 +38,15 @@ export default class ClientStore extends EventTarget {
     return this.#optimistic.getContacts();
   }
 
-  async addContact(contact) {
-    const dispatch = this.#prepareEventDispatches('addContact');
+  async saveContact(contact) {
+    const dispatch = this.#prepareEventDispatches('saveContact');
 
     if (dispatch.before(contact)) {
       await this.#withinTransaction(async () => {
-        this.#optimistic.addContact(contact);
+        this.#optimistic.saveContact(contact);
         this.pendingIds.add(contact.id);
         dispatch.optimistic(contact);
         await this.#api.putContact(contact);
-      });
-
-      dispatch.confirmed(contact);
-    }
-  }
-
-  async updateContact(contact) {
-    const dispatch = this.#prepareEventDispatches('updateContact');
-
-    if (dispatch.before(contact)) {
-      await this.#withinTransaction(async () => {
-        this.#optimistic.updateContact(contact);
-        this.pendingIds.add(contact.id);
-        dispatch.optimistic(contact);
-        await this.#api.patchContact(contact);
       });
 
       dispatch.confirmed(contact);
@@ -73,7 +58,7 @@ export default class ClientStore extends EventTarget {
 
     if (dispatch.before(contact)) {
       await this.#withinTransaction(async () => {
-        this.#optimistic.updateContact({ ...contact, deleted: true });
+        this.#optimistic.patchContact({ id: contact.id, deleted: true });
         this.pendingIds.add(contact.id);
         dispatch.optimistic(contact);
         await this.#api.deleteContact(contact);
@@ -124,21 +109,20 @@ export default class ClientStore extends EventTarget {
       detail,
     }),
     optimistic: (detail) => {
-      this.#dispatchStoreEvent({ type, detail });
       this.#dispatchStoreEvent({ type: 'change' });
+      this.#dispatchStoreEvent({ type, detail });
     },
     confirmed: (detail) => {
+      this.#dispatchStoreEvent({ type: 'changeDone' });
       this.#dispatchStoreEvent({
         type: `${type}Done`,
         detail,
       });
-
-      this.#dispatchStoreEvent({ type: 'changeDone' });
     },
   });
 
   #dispatchStoreEvent = ({ type, cancelable = false, detail }) => {
-    const result = this.dispatchEvent(new CustomEvent(`store:${type}`, {
+    const result = this.dispatchEvent(new CustomEvent(type, {
       bubbles: true,
       composed: true,
       cancelable,

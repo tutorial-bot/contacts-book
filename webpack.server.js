@@ -1,6 +1,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const NodemonPlugin = require('nodemon-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'production',
@@ -24,25 +25,15 @@ module.exports = {
           'eslint-loader',
         ],
       },
-      {
-        test: /\.ejs$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              emitFile: false,
-              name: '[name].[ext]',
-              publicPath(url, resourcePath, context) {
-                return path.basename(url, '.ejs');
-              },
-              outputPath: 'views'
-            }
-          }
-        ],
-      }
     ],
   },
   plugins: [
+    new CopyPlugin([
+      {
+        from: './src/server/views/error.ejs',
+        to: './views/error.ejs',
+      },
+    ]),
     new NodemonPlugin(),
-  ]
+  ],
 };

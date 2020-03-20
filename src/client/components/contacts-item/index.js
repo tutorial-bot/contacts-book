@@ -1,3 +1,3 @@
 import ContactsItem from './ContactsItem';
 
-customElements.define('contact-item', ContactsItem);
+customElements.define('contacts-item', ContactsItem);

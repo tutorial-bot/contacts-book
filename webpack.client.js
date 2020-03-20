@@ -22,15 +22,16 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: '[name].[hash].css',
+              publicPath: '/',
               esModule: false,
-            }
+            },
           },
           'extract-loader',
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-            }
+            },
           },
           {
             loader: 'sass-loader',
@@ -57,9 +58,9 @@ module.exports = {
                 'input:src',
                 'object:data',
                 'script:src',
-                'link:href'
-              ]
-            }
+                'link:href',
+              ],
+            },
           },
         ],
       },
@@ -69,7 +70,7 @@ module.exports = {
           'babel-loader',
           'eslint-loader',
         ],
-      }
+      },
     ],
   },
   plugins: [
@@ -82,4 +83,14 @@ module.exports = {
       invalidPath: '../public/',
     }),
   ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      // cacheGroups: {
+        // vendor: {
+          // test: /[\\/]node_modules[\\/]/,
+        // },
+      // },
+    },
+  },
 };
