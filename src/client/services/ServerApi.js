@@ -11,18 +11,18 @@ export default class ServerApi {
     return this.#fetchContact('DELETE', contact.id);
   }
 
-  async #fetchContact(method, contactId, body) {
+  #fetchContact = async (method, contactId, body) => {
     const url = `/contacts/${contactId}`;
     const data = {
       method,
-      headers: {}
+      headers: {},
     };
 
     if (body) {
       data.headers['Content-Type'] = 'application/json';
-      data.body = JSON.stringify(contact);
+      data.body = JSON.stringify(body);
     }
 
-    return fetch(url, data).then(r => r.json());
+    return fetch(url, data).then((r) => r.json());
   }
 }

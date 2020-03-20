@@ -1,6 +1,11 @@
 export default class ContactsList extends HTMLElement {
+  /** @type {Contact[]} */
   #items = [];
+
+  /** @type {HTMLOListElement} */
   #list = null;
+
+  /** @type {HTMLElement} */
   #noItems = null;
 
   constructor() {
@@ -22,7 +27,7 @@ export default class ContactsList extends HTMLElement {
     const minCount = Math.min(newCount, oldCount);
     const maxCount = Math.max(newCount, oldCount);
 
-    for (let index = 0; index < maxCount; index++) {
+    for (let index = 0; index < maxCount; index += 1) {
       const shouldUpdate = index < minCount;
       const shouldAdd = !shouldUpdate && (index >= oldCount);
       const shouldDelete = !shouldUpdate && (index >= newCount);
@@ -30,18 +35,11 @@ export default class ContactsList extends HTMLElement {
       const itemValue = value[index];
 
       if (shouldAdd) {
-        this.#appendListItem(itemValue, index)
-        continue;
-      }
-
-      if (shouldUpdate) {
+        this.#appendListItem(itemValue, index);
+      } else if (shouldUpdate) {
         this.#updateListItem(itemValue, index);
-        continue;
-      }
-
-      if (shouldDelete) {
+      } else if (shouldDelete) {
         this.#removeListItem(itemValue, index);
-        continue;
       }
     }
 
@@ -49,7 +47,7 @@ export default class ContactsList extends HTMLElement {
     this.#noItems.hidden = this.#items.length > 0;
   }
 
-  #appendListItem(value) {
+  #appendListItem = (value) => {
     const contactsItem = document.createElement('contacts-item');
     contactsItem.value = value;
 
@@ -57,19 +55,19 @@ export default class ContactsList extends HTMLElement {
     li.append(contactsItem);
 
     this.#list.appendChild(li);
-  }
+  };
 
-  #updateListItem(value, index) {
+  #updateListItem = (value, index) => {
     const li = this.#list.children[index];
     const [contactsItem] = li.getElementsByTagName('contacts-item');
 
     console.assert(contactsItem, '<contacts-list> should have <contacts-item> within every <li>');
     contactsItem.value = value;
-  }
+  };
 
-  #removeListItem(_value, index) {
+  #removeListItem = (_value, index) => {
     const li = this.#list.children[index];
     console.assert(li, `<contacts-list> should have <li> at index: ${index}`);
     li.remove();
-  }
+  };
 }

@@ -31,7 +31,7 @@ export default class Store {
   }
 
   getContacts() {
-    return [ ...this.#contacts.values() ];
+    return [...this.#contacts.values()];
   }
 
   getContact(id) {

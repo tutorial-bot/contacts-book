@@ -1,8 +1,8 @@
-import {mapValues} from 'lodash';
+import { mapValues } from 'lodash';
 import template from './ContactsApp.html';
-import AppState from "../../model/AppState";
-import ClientStore from "../../services/ClientStore";
-import ClientRouter from "../../services/ClientRouter";
+import AppState from '../../model/AppState';
+import ClientStore from '../../services/ClientStore';
+import ClientRouter from '../../services/ClientRouter';
 
 export default class ContactsApp extends HTMLElement {
   /** @type {ClientStore} */
@@ -56,8 +56,8 @@ export default class ContactsApp extends HTMLElement {
     }
   }
 
-  #addListeners() {
-  }
+  #addListeners = () => {
+  };
 
   connectedCallback() {
     this.#router.listen();

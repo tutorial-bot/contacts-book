@@ -1,7 +1,7 @@
 import * as path from 'path';
 import express from 'express';
 import Store from '../common/model/Store';
-import LocationBuilder from "../common/model/LocationBuilder";
+import LocationBuilder from '../common/model/LocationBuilder';
 
 const app = express();
 app.set('view engine', 'ejs');

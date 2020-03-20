@@ -14,28 +14,33 @@ export default class ClientRouter {
     window.removeEventListener('popstate', this.#onpopstate);
   }
 
-  #onpopstate = (e) => {
-    this.handleRoute(location.pathname);
+  #onpopstate = () => {
+    this.handleRoute(window.location.pathname);
   };
 
   handleRoute(path) {
-    const equals = str => path === str || path === `${str}/`;
+    const equals = (str) => path === str || path === `${str}/`;
 
     if (!path || equals('')) {
-      return this.#appState.gotoContactsList();
+      this.#appState.gotoContactsList();
+      return;
     }
 
     if (equals('/contacts')) {
-      return this.#appState.gotoContactsList();
+      this.#appState.gotoContactsList();
+      return;
     }
 
     if (equals('/contacts/new')) {
-      return this.#appState.openNewContactForm();
+      this.#appState.openNewContactForm();
+      return;
     }
 
     if (path.startsWith('/contacts/')) {
       const id = path.split('/')[2];
-      return this.#appState.openEditContactForm(id);
+
+      this.#appState.openEditContactForm(id);
+      return;
     }
 
     this.#appState.pushError(new Error(`Cannot resolve path: ${path}`));

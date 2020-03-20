@@ -1,4 +1,5 @@
 import template from './ContactsItem.html';
+import LocationBuilder from '../../../common/model/LocationBuilder';
 
 export default class ContactsItem extends HTMLElement {
   constructor() {
@@ -20,16 +21,16 @@ export default class ContactsItem extends HTMLElement {
     this.#render();
   }
 
-  #render() {
-    const { id = 'new', firstName = '', lastName = '' } = this.value;
+  #render = () => {
+    const { firstName = '', lastName = '' } = this.value;
 
     const link = this.shadowRoot.getElementById('link');
-    link.href = '#';
+    link.href = LocationBuilder.editContact(this.value);
     link.textContent = `${firstName} ${lastName}`;
-    link.addEventListener('click', this._onLinkClick);
-  }
+    link.addEventListener('click', this.#onLinkClick);
+  };
 
-  _onLinkClick = (e) => {
+  #onLinkClick = (e) => {
     e.preventDefault();
 
     this.dispatchEvent(new CustomEvent('contact-selected', {

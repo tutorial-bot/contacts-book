@@ -1,6 +1,6 @@
-import {cloneDeep} from 'lodash';
-import Contact from "../../common/model/Contact";
-import LocationBuilder from "../../common/model/LocationBuilder";
+import { cloneDeep } from 'lodash';
+import Contact from '../../common/model/Contact';
+import LocationBuilder from '../../common/model/LocationBuilder';
 
 export default class AppState extends EventTarget {
   /** @type {ClientStore} */
@@ -62,7 +62,7 @@ export default class AppState extends EventTarget {
 
   discardEditing = this.gotoContactsList;
 
-  pushError = e => {
+  pushError = (e) => {
     this.#errors.push(e);
     this.#dispatchAppEvent({ type: 'pushError', detail: e });
   };
@@ -72,12 +72,14 @@ export default class AppState extends EventTarget {
     this.#dispatchAppEvent({ type: 'discardErrors' });
   };
 
-  #dispatchAppEvent({ type, cancelable = false, detail }) {
-    return this.dispatchEvent(new CustomEvent(`app:${type}`, {
+  #dispatchAppEvent = ({ type, cancelable = false, detail }) => {
+    const result = this.dispatchEvent(new CustomEvent(`app:${type}`, {
       bubbles: true,
       composed: true,
       cancelable,
       detail,
     }));
-  }
+
+    return result;
+  };
 }

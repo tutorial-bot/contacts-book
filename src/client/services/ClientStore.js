@@ -1,4 +1,4 @@
-import {capitalize} from 'lodash';
+import { capitalize } from 'lodash';
 
 export default class ClientStore extends EventTarget {
   /**
@@ -86,7 +86,7 @@ export default class ClientStore extends EventTarget {
 
   #isInTransaction = false;
 
-  async #withinTransaction(callback) {
+  #withinTransaction = async (callback) => {
     if (this.#isInTransaction) {
       throw new Error('Cannot execute multiple operations within the same transaction');
     }
@@ -108,45 +108,43 @@ export default class ClientStore extends EventTarget {
       this.#isInTransaction = false;
       this.pendingIds.clear();
     }
-  }
+  };
 
-  #revert() {
+  #revert = () => {
     this.#optimistic = this.#confirmed;
 
     this.#dispatchStoreEvent({ type: 'change' });
     this.#dispatchStoreEvent({ type: 'changeDone' });
-  }
+  };
 
-  #prepareEventDispatches(type) {
-    return {
-      before: (detail) => {
-        return this.#dispatchStoreEvent({
-          type: `before${capitalize(type)}`,
-          cancelable: true,
-          detail,
-        });
-      },
-      optimistic: (detail) => {
-        this.#dispatchStoreEvent({ type, detail });
-        this.#dispatchStoreEvent({ type: `change` });
-      },
-      confirmed: (detail) => {
-        this.#dispatchStoreEvent({
-          type: `${type}Done`,
-          detail,
-        });
+  #prepareEventDispatches = (type) => ({
+    before: (detail) => this.#dispatchStoreEvent({
+      type: `before${capitalize(type)}`,
+      cancelable: true,
+      detail,
+    }),
+    optimistic: (detail) => {
+      this.#dispatchStoreEvent({ type, detail });
+      this.#dispatchStoreEvent({ type: 'change' });
+    },
+    confirmed: (detail) => {
+      this.#dispatchStoreEvent({
+        type: `${type}Done`,
+        detail,
+      });
 
-        this.#dispatchStoreEvent({ type: `changeDone` });
-      },
-    };
-  }
+      this.#dispatchStoreEvent({ type: 'changeDone' });
+    },
+  });
 
-  #dispatchStoreEvent({ type, cancelable = false, detail }) {
-    return this.dispatchEvent(new CustomEvent(`store:${type}`, {
+  #dispatchStoreEvent = ({ type, cancelable = false, detail }) => {
+    const result = this.dispatchEvent(new CustomEvent(`store:${type}`, {
       bubbles: true,
       composed: true,
       cancelable,
       detail,
     }));
-  }
+
+    return result;
+  };
 }

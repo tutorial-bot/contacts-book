@@ -4,10 +4,15 @@ export default class ContactsDetails extends HTMLElement {
   #value = {};
 
   #form = null;
+
   #inputId = null;
+
   #inputFirstName = null;
+
   #inputLastName = null;
+
   #inputEmail = null;
+
   #inputDateOfBirth = null;
 
   constructor() {
@@ -23,7 +28,7 @@ export default class ContactsDetails extends HTMLElement {
     this.#inputDateOfBirth = this.shadowRoot.getElementById('dateOfBirth');
 
     this.#form = this.shadowRoot.getElementById('form');
-    this.#form.onsubmit = this._onFormSubmit;
+    this.#form.onsubmit = this.#onFormSubmit;
 
     this.#render();
   }
@@ -37,7 +42,7 @@ export default class ContactsDetails extends HTMLElement {
     this.#render();
   }
 
-  #render() {
+  #render = () => {
     const {
       id = '',
       firstName = '',
@@ -51,15 +56,15 @@ export default class ContactsDetails extends HTMLElement {
     this.#inputLastName.value = lastName;
     this.#inputEmail.value = email;
     this.#inputDateOfBirth.value = dateOfBirth;
-  }
+  };
 
-  _onFormSubmit = (e) => {
+  #onFormSubmit = (e) => {
     e.preventDefault();
 
     this.dispatchEvent(new CustomEvent('contact-submitted', {
       bubbles: true,
       composed: true,
-      detail: Object.fromEntries([...new FormData(e.target).entries()])
+      detail: Object.fromEntries([...new FormData(e.target).entries()]),
     }));
   };
 }
