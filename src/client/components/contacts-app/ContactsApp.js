@@ -69,6 +69,8 @@ export default class ContactsApp extends HTMLElement {
     this.#appState.addEventListener('openEditContactForm', this.#onOpenEditContactForm);
     this.#appState.addEventListener('gotoContactsList', this.#onGotoContactsList);
     this.#appState.addEventListener('selectContact', this.#onSelectContact);
+    this.#appState.addEventListener('errorsOverlay', this.#onErrorsOverlay);
+
     this.#store.addEventListener('change', this.#onContactsChange);
     this.#store.addEventListener('changeDone', this.#onContactsChange);
     this.#store.addEventListener('saveContact', this.#onSaveContact);
@@ -152,6 +154,18 @@ export default class ContactsApp extends HTMLElement {
 
   #onSaveContact = (e) => {
     this.#elements.list.selectedValue = e.detail;
+  };
+
+  #onErrorsOverlay = (e) => {
+    const error = e.detail;
+    this.#elements.errors.textContent = error;
+    this.#elements.errors.hidden = !error;
+
+    if (error) {
+      setTimeout(() => {
+        this.#appState.discardErrors();
+      }, 5000);
+    }
   };
 
   static observedAttributes = ['initial-state'];

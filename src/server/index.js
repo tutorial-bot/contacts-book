@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import express from 'express';
 import Store from '../common/model/Store';
@@ -13,7 +14,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: 864e5,
 }));
 
-const store = new Store();
+
+const serializedData = fs.existsSync('.store')
+  ? fs.readFileSync('.store', 'utf8')
+  : undefined;
+
+const store = new Store(serializedData);
 
 app.get('/', (req, res) => {
   res.redirect('/contacts');
@@ -48,11 +54,16 @@ app.put('/contacts/:contactId', express.json(), (req, res) => {
     id: req.params.contactId,
   });
 
+  fs.writeFileSync('.store', JSON.stringify(store));
+
   res.send({ success: true });
 });
 
 app.delete('/contacts/:contactId', (req, res) => {
   store.removeContact({ id: req.params.contactId });
+
+  fs.writeFileSync('.store', JSON.stringify(store));
+
   res.send({ success: true });
 });
 

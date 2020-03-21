@@ -58,6 +58,7 @@ export default class ClientRouter {
     if (!this.#isInPopState) {
       const { path, title } = detail.location;
       window.history.pushState(null, title, path);
+      document.title = title;
     }
 
     this.#isInPopState = false;
@@ -67,6 +68,7 @@ export default class ClientRouter {
     if (!this.#isInPopState) {
       const { path, title } = detail.location;
       window.history.replaceState(null, title, path);
+      document.title = title;
     }
 
     this.#isInPopState = false;

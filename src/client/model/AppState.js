@@ -18,6 +18,7 @@ export default class AppState extends EventTarget {
     super();
 
     this.#store = store;
+    this.#store.addEventListener('error', this.#onStoreError);
   }
 
   getContactDetails = () => this.#contactDetails;
@@ -76,12 +77,16 @@ export default class AppState extends EventTarget {
 
   pushError = (e) => {
     this.#errors.push(e);
-    this.#dispatchAppEvent({ type: 'pushError', detail: e });
+    this.#dispatchAppEvent({ type: 'errorsOverlay', detail: e });
   };
 
   discardErrors = () => {
     this.#errors = [];
-    this.#dispatchAppEvent({ type: 'discardErrors' });
+    this.#dispatchAppEvent({ type: 'errorsOverlay', detail: null });
+  };
+
+  #onStoreError = (e) => {
+    this.pushError(e.detail);
   };
 
   #dispatchAppEvent = ({ type, cancelable = false, detail }) => {

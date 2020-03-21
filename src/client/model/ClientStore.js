@@ -96,10 +96,12 @@ export default class ClientStore extends EventTarget {
   };
 
   #revert = () => {
-    this.#optimistic = this.#confirmed;
+    if (!this.#optimistic.equals(this.#confirmed)) {
+      this.#optimistic = this.#confirmed;
 
-    this.#dispatchStoreEvent({ type: 'change' });
-    this.#dispatchStoreEvent({ type: 'changeDone' });
+      this.#dispatchStoreEvent({ type: 'change' });
+      this.#dispatchStoreEvent({ type: 'changeDone' });
+    }
   };
 
   #prepareEventDispatches = (type) => ({

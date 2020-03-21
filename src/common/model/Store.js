@@ -22,6 +22,13 @@ export default class Store {
     };
   }
 
+  equals(otherStore) {
+    const t1 = Number(this.#lastUpdated);
+    const t2 = Number(otherStore.#lastUpdated);
+
+    return t1 === t2;
+  }
+
   clone() {
     return new Store(this.toJSON());
   }

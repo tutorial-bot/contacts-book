@@ -3,3 +3,9 @@ $primary-color: purple;
 h1 {
     color: $primary-color;
 }
+
+#errors {
+  position: fixed;
+  top: 0;
+  background: pink;
+}
